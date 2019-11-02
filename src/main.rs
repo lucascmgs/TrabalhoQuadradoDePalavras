@@ -44,21 +44,27 @@ impl ResolveQuadrado {
             //Clonamos o bucket de palavras a serem testadas
             self.palavras_atuais = self.conjuntos_palavras[count].clone();
             self.recorre(count);
+            //Se, após chamar a recursão temos um quadrado ótimo, imprimimos ele
             if self.quadrado_otimo.len() > 0 {
                 println!("Temos o quadrado {:?}", self.quadrado_otimo);
                 break;
-            } else {
+            } 
+            //Se não, limpamos o quadrado e tentamos na próxima iteração
+            else {
                 self.quadrado.clear();
             }
             count = count - 1;
         }
     }
 
+    //Checa se as colunas do quadrado atual com os caracteres correspondentes da nova palavra formam um prefixo
     fn checa_prefixos(&mut self, palavra: &String) -> bool{
         println!("{:?}", self.quadrado);
+        //Vetorizamos os caracteres da palavra
         let chars: Vec<char> = palavra.chars().collect();
         for ind_char in 0..palavra.len() {
             let mut pref = Vec::new();
+            //Percorremos as colunas do quadrado atual, acrescentando os caracteres encontrados ao prefixo que queremos checar
             for ind_pal in 0..self.quadrado.len(){
                 pref.push(self.quadrado[ind_pal][ind_char]);
             }
@@ -74,20 +80,24 @@ impl ResolveQuadrado {
 
     fn recorre(&mut self, index: usize) {
         println!("{:?}", self.palavras_atuais);
+        //Se obtemos um quadrado com a quantidade de palavras igual ao tamanho de palavra atual, encontramos o quadrado ótimo
         if self.quadrado.len() == index {
             self.quadrado_otimo = self.quadrado.clone();
             return;
         }
 
         if self.palavras_atuais.len() > 0 {
+            //Iteramos sobre todas as palavras atuais
             let mut ind = self.palavras_atuais.len() - 1;
             loop {
                 let mut recorreu = false;
                 let pal = self.palavras_atuais.get_mut(ind).unwrap().clone();
                 self.palavras_atuais.remove(ind);
                 
+                //Se os caracteres da palavra atual formam um prefixo com o quadrado atual, adicionamos essa palavra ao quadrado e seguimos o backtrack
                 if self.checa_prefixos(&pal){
                     self.quadrado.push(pal.chars().collect());
+                    //Backtrack
                     self.recorre(index);
                     self.quadrado.pop();
                     recorreu = true;
